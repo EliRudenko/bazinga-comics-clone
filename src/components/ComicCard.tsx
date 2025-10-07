@@ -5,11 +5,15 @@ interface ComicCardProps {
   title: string;
   creators?: string;
   rating?: number;
+  onClick?: () => void;
 }
 
-const ComicCard = ({ image, title, creators, rating }: ComicCardProps) => {
+const ComicCard = ({ image, title, creators, rating, onClick }: ComicCardProps) => {
   return (
-    <div className="group relative overflow-hidden rounded-sm bg-card transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-primary/20">
+    <div 
+      onClick={onClick}
+      className="group relative overflow-hidden rounded-sm bg-card transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-primary/20 cursor-pointer"
+    >
       <div className="aspect-[2/3] overflow-hidden">
         <img
           src={image}

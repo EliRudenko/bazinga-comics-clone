@@ -13,9 +13,10 @@ interface ComicSectionProps {
   title: string;
   comics: Comic[];
   showViewAll?: boolean;
+  onComicClick?: (comic: Comic) => void;
 }
 
-const ComicSection = ({ id, title, comics, showViewAll = true }: ComicSectionProps) => {
+const ComicSection = ({ id, title, comics, showViewAll = true, onComicClick }: ComicSectionProps) => {
   return (
     <section id={id} className="py-12 md:py-16">
       <div className="container mx-auto px-4">
@@ -30,7 +31,11 @@ const ComicSection = ({ id, title, comics, showViewAll = true }: ComicSectionPro
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
           {comics.map((comic, index) => (
-            <ComicCard key={index} {...comic} />
+            <ComicCard 
+              key={index} 
+              {...comic} 
+              onClick={() => onComicClick?.(comic)}
+            />
           ))}
         </div>
       </div>

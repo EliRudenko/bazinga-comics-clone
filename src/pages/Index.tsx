@@ -1,8 +1,12 @@
+import { useState } from "react";
 import Header from "@/components/Header";
 import HeroCarousel from "@/components/HeroCarousel";
 import ComicSection from "@/components/ComicSection";
 import UnlimitedBanner from "@/components/UnlimitedBanner";
 import Footer from "@/components/Footer";
+import FilterBar from "@/components/FilterBar";
+import BrowseByFilter from "@/components/BrowseByFilter";
+import ComicModal from "@/components/ComicModal";
 
 import comic1 from "@/assets/comic-1.jpg";
 import comic2 from "@/assets/comic-2.jpg";
@@ -14,6 +18,14 @@ import comic7 from "@/assets/comic-7.jpg";
 import comic8 from "@/assets/comic-8.jpg";
 
 const Index = () => {
+  const [selectedComic, setSelectedComic] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleComicClick = (comic: any) => {
+    setSelectedComic(comic);
+    setIsModalOpen(true);
+  };
+
   const newThisWeek = [
     { image: comic1, title: "X-MEN: AGE OF MYTH ACTION FIGURE (2025) #1", creators: "Kindt, Unzueta", rating: 4.5 },
     { image: comic2, title: "EMPIRES OF VIOLENCE (2025) #1", creators: "Remender, Kim", rating: 4.8 },
@@ -50,14 +62,39 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <FilterBar />
       <main>
         <HeroCarousel />
-        <ComicSection id="new-this-week" title="NEW THIS WEEK" comics={newThisWeek} />
-        <ComicSection id="best-selling" title="BEST SELLING DIGITAL COMICS" comics={bestSelling} />
+        <BrowseByFilter />
+        <ComicSection 
+          id="new-this-week" 
+          title="NEW THIS WEEK" 
+          comics={newThisWeek} 
+          onComicClick={handleComicClick}
+        />
+        <ComicSection 
+          id="best-selling" 
+          title="BEST SELLING DIGITAL COMICS" 
+          comics={bestSelling}
+          onComicClick={handleComicClick}
+        />
         <UnlimitedBanner />
-        <ComicSection id="read-for-free" title="READ FOR FREE" comics={readForFree} />
+        <ComicSection 
+          id="read-for-free" 
+          title="READ FOR FREE" 
+          comics={readForFree}
+          onComicClick={handleComicClick}
+        />
       </main>
       <Footer />
+      
+      {selectedComic && (
+        <ComicModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          comic={selectedComic}
+        />
+      )}
     </div>
   );
 };
