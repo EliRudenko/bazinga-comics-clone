@@ -1,4 +1,4 @@
-import { Search, User, Menu, ShoppingCart } from "lucide-react";
+import { Search, User, Menu, ShoppingCart, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -8,10 +8,12 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { Link } from "react-router-dom";
 
 const Header = () => {
   const { totalItems } = useCart();
+  const { totalItems: wishlistItems } = useWishlist();
   const comicsSubmenu = ["Release Calendar", "Bazinga Unlimited", "Stormbreakers", "Reading Guides", "All Comics"];
   const charactersSubmenu = ["Browse All", "Teams", "Avengers", "X-Men", "Guardians"];
   const moviesSubmenu = ["Latest Releases", "Upcoming", "Box Office", "News"];
@@ -24,9 +26,9 @@ const Header = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-8">
-            <a href="#hero" className="text-2xl font-black tracking-tighter text-primary hover:text-primary/90 transition-colors">
+            <Link to="/" className="text-2xl font-black tracking-tighter text-primary hover:text-primary/90 transition-colors">
               BAZINGA
-            </a>
+            </Link>
             
             {/* Desktop Navigation */}
             <NavigationMenu className="hidden lg:flex">
@@ -152,6 +154,16 @@ const Header = () => {
             <Button variant="ghost" size="icon" className="hidden md:flex">
               <Search className="h-5 w-5" />
             </Button>
+            <Link to="/wishlist">
+              <Button variant="ghost" size="icon" className="relative">
+                <Heart className="h-5 w-5" />
+                {wishlistItems > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {wishlistItems}
+                  </span>
+                )}
+              </Button>
+            </Link>
             <Link to="/cart">
               <Button variant="ghost" size="icon" className="relative">
                 <ShoppingCart className="h-5 w-5" />
@@ -162,10 +174,12 @@ const Header = () => {
                 )}
               </Button>
             </Link>
-            <Button variant="default" className="hidden md:flex">
-              <User className="h-4 w-4 mr-2" />
-              SIGN IN
-            </Button>
+            <Link to="/auth">
+              <Button variant="default" className="hidden md:flex">
+                <User className="h-4 w-4 mr-2" />
+                SIGN IN
+              </Button>
+            </Link>
             <Button variant="ghost" size="icon" className="lg:hidden">
               <Menu className="h-5 w-5" />
             </Button>

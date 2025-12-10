@@ -5,8 +5,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Star, ShoppingCart, Check } from "lucide-react";
+import { Star, ShoppingCart, Check, Heart } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { useState } from "react";
 
 interface ComicModalProps {
@@ -25,12 +26,15 @@ interface ComicModalProps {
 
 const ComicModal = ({ isOpen, onClose, comic }: ComicModalProps) => {
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [added, setAdded] = useState(false);
   const price = comic.price || 4.99;
+  const comicId = comic.title.toLowerCase().replace(/\s+/g, '-');
+  const inWishlist = isInWishlist(comicId);
 
   const handleAddToCart = () => {
     addToCart({
-      id: comic.title.toLowerCase().replace(/\s+/g, '-'),
+      id: comicId,
       title: comic.title,
       image: comic.image,
       creators: comic.creators,
@@ -38,6 +42,20 @@ const ComicModal = ({ isOpen, onClose, comic }: ComicModalProps) => {
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
+  };
+
+  const handleWishlistToggle = () => {
+    if (inWishlist) {
+      removeFromWishlist(comicId);
+    } else {
+      addToWishlist({
+        id: comicId,
+        title: comic.title,
+        image: comic.image,
+        creators: comic.creators,
+        price,
+      });
+    }
   };
 
   return (
@@ -103,7 +121,15 @@ const ComicModal = ({ isOpen, onClose, comic }: ComicModalProps) => {
                   </>
                 )}
               </Button>
-              <Button variant="outline" className="w-full" onClick={onClose}>
+              <Button 
+                variant={inWishlist ? "secondary" : "outline"} 
+                className="w-full"
+                onClick={handleWishlistToggle}
+              >
+                <Heart className={`h-4 w-4 mr-2 ${inWishlist ? 'fill-current' : ''}`} />
+                {inWishlist ? 'IN WISHLIST' : 'ADD TO WISHLIST'}
+              </Button>
+              <Button variant="ghost" className="w-full" onClick={onClose}>
                 CONTINUE SHOPPING
               </Button>
             </div>
