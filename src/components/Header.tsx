@@ -1,5 +1,7 @@
-import { Search, User, Menu, ShoppingCart, Heart } from "lucide-react";
+import { useState } from "react";
+import { Search, User, Menu, ShoppingCart, Heart, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -9,16 +11,32 @@ import {
 } from "@/components/ui/navigation-menu";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const { totalItems } = useCart();
   const { totalItems: wishlistItems } = useWishlist();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+
   const comicsSubmenu = ["Release Calendar", "Bazinga Unlimited", "Stormbreakers", "Reading Guides", "All Comics"];
   const charactersSubmenu = ["Browse All", "Teams", "Avengers", "X-Men", "Guardians"];
   const moviesSubmenu = ["Latest Releases", "Upcoming", "Box Office", "News"];
   const tvShowsSubmenu = ["Streaming Now", "Upcoming Series", "Episode Guides"];
   const gamesSubmenu = ["Video Games", "Mobile Games", "Board Games"];
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchOpen(false);
+    }
+  };
+
+  const handleAllComicsClick = () => {
+    navigate("/?view=all");
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -32,7 +50,7 @@ const Header = () => {
             
             {/* Desktop Navigation */}
             <NavigationMenu className="hidden lg:flex">
-              <NavigationMenuList>
+              <NavigationMenuList className="gap-0">
                 <NavigationMenuItem>
                   <a href="#news" className="text-sm font-semibold text-foreground/80 hover:text-foreground transition-colors px-4 py-2">
                     NEWS
@@ -46,13 +64,23 @@ const Header = () => {
                   <NavigationMenuContent>
                     <div className="w-[200px] bg-white text-black p-2 shadow-lg border border-gray-200">
                       {comicsSubmenu.map((item) => (
-                        <a
-                          key={item}
-                          href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
-                          className="block px-4 py-2 text-sm hover:bg-gray-100 rounded-sm transition-colors"
-                        >
-                          {item}
-                        </a>
+                        item === "All Comics" ? (
+                          <button
+                            key={item}
+                            onClick={handleAllComicsClick}
+                            className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 rounded-sm transition-colors"
+                          >
+                            {item}
+                          </button>
+                        ) : (
+                          <a
+                            key={item}
+                            href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
+                            className="block px-4 py-2 text-sm hover:bg-gray-100 rounded-sm transition-colors"
+                          >
+                            {item}
+                          </a>
+                        )
                       ))}
                     </div>
                   </NavigationMenuContent>
@@ -151,9 +179,28 @@ const Header = () => {
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="hidden md:flex">
-              <Search className="h-5 w-5" />
-            </Button>
+            {searchOpen ? (
+              <form onSubmit={handleSearch} className="flex items-center gap-2">
+                <Input
+                  type="text"
+                  placeholder="Search comics..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-48 md:w-64 bg-muted"
+                  autoFocus
+                />
+                <Button type="submit" variant="ghost" size="icon">
+                  <Search className="h-5 w-5" />
+                </Button>
+                <Button type="button" variant="ghost" size="icon" onClick={() => { setSearchOpen(false); setSearchQuery(""); }}>
+                  <X className="h-5 w-5" />
+                </Button>
+              </form>
+            ) : (
+              <Button variant="ghost" size="icon" className="hidden md:flex" onClick={() => setSearchOpen(true)}>
+                <Search className="h-5 w-5" />
+              </Button>
+            )}
             <Link to="/wishlist">
               <Button variant="ghost" size="icon" className="relative">
                 <Heart className="h-5 w-5" />
